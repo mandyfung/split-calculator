@@ -3,63 +3,88 @@ import logo from './logo.svg';
 import './App.css';
 
 class Form extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {paid1: '', paid2:'', message:''};
-
-    this.handleChange1 = this.handleChange1.bind(this);
-    this.handleChange2 = this.handleChange2.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  handleChange1(event) {
-    this.setState({paid1: event.target.value});
-  }
-
-  handleChange2(event) {
-    this.setState({paid2: event.target.value});
-  }
-
-  handleSubmit(event) {
-    const pay1 = this.state.paid1;
-    const pay2 = this.state.paid2;
-    const total = parseFloat(pay1) + parseFloat(pay2);
-    const numOfPeople = 2;
-    const perPerson = total / numOfPeople;
-    const person1 = perPerson - pay1;
-    const person2 = perPerson - pay2;
-
-    let message = "";
-    if (person1 > 0) {
-        message += "Person one needs to pay $" + person1 + " to person two";
-    }
-    if (person2 > 0) {
-        message += "Person two needs to pay $" + person2 + " to person one";
+    constructor(props) {
+        super(props);
+        this.state = {
+            people: [{name:"", amount:""}],
+            message: ''
+        };
     }
 
-    this.setState({message: message});
-    event.preventDefault();
-  }
+    addPerson = () => {
+        this.setState({
+            people: this.state.people.concat([{
+                name: "",
+                amount: ""
+            }])
+        })
+    };
 
-  render() {
-    return (
-      <div>
-          <form onSubmit={this.handleSubmit}>
-            <label>
-                Paid 1:
-                <input type="number" value={this.state.paid1} onChange={this.handleChange1} />
-            </label>
-            <label>
-                Paid 2:
-                <input type="number" value={this.state.paid2} onChange={this.handleChange2} />
-            </label>
+    removePerson = currentIndex => () => {
+        this.setState({
+            people: this.state.people.filter((person, personIndex) => currentIndex !== personIndex)
+        });
+    };
+
+    handlePersonChange = currentIndex => personEvent => {
+        const { name, value } = personEvent.target;
+        let people = [... this.state.people];
+        people[currentIndex] = {... people[currentIndex], [name]: value};
+        this.setState({ people: people });
+    };
+
+    handleSubmit = event => {
+        const people = this.state.people;
+        const parsedAmount =  people.map(person => {
+            const amount = parseFloat(person.amount);
+            if (isNaN(amount)) {
+                return {name: person.name, amount: 0};
+            }
+            return {name: person.name, amount: amount};
+        });
+        const total = parsedAmount.map(person => person.amount).reduce((total, currentValue) => total + currentValue);
+        const numOfPeople = people.length;
+        const perPerson = total / numOfPeople;
+        const amountOwing = parsedAmount.map(person => {
+            const owingAmount = perPerson - person.amount;
+            return {name:person.name, amount:owingAmount};
+        });
+
+        let message = "";
+        amountOwing.forEach(owing => {
+            console.log(owing);
+            if (owing.amount > 0) {
+                message += "Person " + owing.name + " needs to pay $" + owing.amount;
+            }
+        });
+
+        this.setState({
+            message: message
+        });
+        event.preventDefault();
+    };
+
+    render() {
+        return ( <div>
+            <form onSubmit={this.handleSubmit}>
+            {this.state.people.map((person, idx) => (
+                <div key={idx}>
+                    <label>
+                        Paid {idx}:
+                        <input type="text" name="name" value={person.name} onChange={this.handlePersonChange(idx)} />
+                        <input type="number" name="amount" value={person.amount} onChange={this.handlePersonChange(idx)} />
+                        <button onClick={this.removePerson(idx)}>Remove person</button>
+                    </label>
+                </div>
+            ))}
+            <button onClick={this.addPerson}>Add person</button>
             <input type="submit" value="Submit" />
-          </form>
+            </form>
 
-          <div>Who pays who: <span>{this.state.message}</span></div>
-      </div>
-    );
-  }
+            <div>Who pays who: <span>{this.state.message}</span></div>
+        </div>
+        );
+    }
 }
 
 export default Form;

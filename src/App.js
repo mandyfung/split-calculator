@@ -52,7 +52,6 @@ class Form extends React.Component {
 
         let message = "";
         amountOwing.forEach(owing => {
-            console.log(owing);
             if (owing.amount > 0) {
                 message += "Person " + owing.name + " needs to pay $" + owing.amount;
             }

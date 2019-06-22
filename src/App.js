@@ -1,13 +1,14 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 class Form extends React.Component {
     constructor(props) {
         super(props);
+        this.errorMessage = "";
         this.state = {
             people: [{name:"", amount:""}],
-            message: ''
+            messages: [],
+            error: ""
         };
     }
 
@@ -28,12 +29,22 @@ class Form extends React.Component {
 
     handlePersonChange = currentIndex => personEvent => {
         const { name, value } = personEvent.target;
-        let people = [... this.state.people];
-        people[currentIndex] = {... people[currentIndex], [name]: value};
+        let people = [...this.state.people];
+        people[currentIndex] = {...people[currentIndex], [name]: value};
         this.setState({ people: people });
     };
 
-    handleSubmit = event => {
+    validateFields = () => {
+        const validFields = this.state.people.every(person => person.name !== "" && person.amount !== "");
+        if (!validFields) {
+            this.setState({ error: "Please fill in every field." });
+        } else {
+            this.errorMessage = "";
+            this.setState({ error: "" })
+        }
+    };
+
+    calculateOwedAmounts = () => {
         const people = this.state.people;
         const parsedAmount =  people.map(person => {
             const amount = parseFloat(person.amount);
@@ -47,41 +58,59 @@ class Form extends React.Component {
         const perPerson = total / numOfPeople;
         const amountOwing = parsedAmount.map(person => {
             const owingAmount = perPerson - person.amount;
-            return {name:person.name, amount:owingAmount};
+            const roundedAmount = owingAmount.toFixed(2);
+            return { name: person.name, amount: roundedAmount };
         });
 
-        let message = "";
-        amountOwing.forEach(owing => {
+        let messages = [];
+        amountOwing.forEach((owing, idx) => {
             if (owing.amount > 0) {
-                message += "Person " + owing.name + " needs to pay $" + owing.amount;
+                const renderedMessage = <div key={idx}>{owing.name + " owes $" + owing.amount}</div>;
+                messages.push(renderedMessage);
             }
         });
 
-        this.setState({
-            message: message
-        });
+        if (this.errorMessage === "") {
+            this.setState({
+                messages: messages
+            });
+        }
+    };
+
+    handleSubmit = event => {
         event.preventDefault();
+        this.validateFields();
+        this.calculateOwedAmounts();
+    };
+
+    clearForm = () => {
+        this.setState({
+            people: [{name:"", amount:""}],
+            messages: []
+        })
     };
 
     render() {
-        return ( <div>
-            <form onSubmit={this.handleSubmit}>
-            {this.state.people.map((person, idx) => (
-                <div key={idx}>
-                    <label>
-                        Paid {idx}:
-                        <input type="text" name="name" value={person.name} onChange={this.handlePersonChange(idx)} />
-                        <input type="number" name="amount" value={person.amount} onChange={this.handlePersonChange(idx)} />
-                        <button onClick={this.removePerson(idx)}>Remove person</button>
-                    </label>
+        return (
+            <div className="container">
+                <div className="controls">
+                    <button className="common-button" onClick={this.addPerson}>Add</button>
+                    <button className="common-button" onClick={this.clearForm}>Clear</button>
                 </div>
-            ))}
-            <button onClick={this.addPerson}>Add person</button>
-            <input type="submit" value="Submit" />
-            </form>
+                <div className={this.state.error !== "" ? "validation-msg" : ""}>{this.state.error}</div>
+                <form className="calc-form" onSubmit={this.handleSubmit}>
+                    {this.state.people.map((person, idx) => (
+                        <div className="entry" key={idx}>
+                            <input className="entry-input" placeholder="Name" type="text" name="name" value={person.name} onChange={this.handlePersonChange(idx)} />
+                            <input className="entry-input" placeholder="Amount" type="number" name="amount" value={person.amount} onChange={this.handlePersonChange(idx)} />
+                            <button className="remove-person" onClick={this.removePerson(idx)}>X</button>
+                        </div>
+                    ))}
+                    <input className="submit-button" type="submit" value="Submit"/>
+                </form>
 
-            <div>Who pays who: <span>{this.state.message}</span></div>
-        </div>
+                <div className={this.state.messages.length !== 0 ? "result" : ""}>{this.state.messages}</div>
+            </div>
         );
     }
 }

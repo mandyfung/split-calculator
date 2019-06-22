@@ -1,33 +1,118 @@
-.App {
-  text-align: center;
+.container {
+    text-align: center;
+    background-color: #FFFFFF;
+    border-radius: 15px;
+    padding: 2em;
+    max-width: 35em;
+    min-width: 10em;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2em;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
-  pointer-events: none;
+.entry-input {
+    height: 100%;
+    padding: 1em;
+    border-radius: 3px;
+    border: #F6F5F7 2px solid;
+    box-sizing: border-box;
+    vertical-align: bottom;
+    margin-right: 5px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.entry-input:focus{
+    outline:none;
+    border: #3EA5D0 2px solid;
+    color: #3EA5D0;
 }
 
-.App-link {
-  color: #61dafb;
+.entry {
+    height: 2em;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.remove-person {
+    height: 100%;
+    border-radius:3px;
+    border: 0px solid;
+    box-sizing: border-box;
+    padding-right: 15px;
+    padding-left: 15px;
+    background:#F1BF19;
+    color:#FFFFFF;
+    font-weight:bold;
+    font-size: 12pt;
+}
+
+.remove-person:hover{
+  background:#f2da87;
+}
+
+.controls {
+    height: 2em;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.common-button {
+    height: 2em;
+    width: 37%;
+    border-radius:3px;
+    border: 0px solid;
+    box-sizing: border-box;
+    padding-right: 15px;
+    padding-left: 15px;
+    background:#3EA5D0;
+    color:#FFFFFF;
+    font-weight:bold;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.common-button:hover {
+    background: #74bbd9;
+}
+
+.submit-button {
+    height: 2em;
+    width: 76%;
+    border-radius:3px;
+    border: 0px solid;
+    box-sizing: border-box;
+    padding-right: 15px;
+    padding-left: 15px;
+    background:#3EA5D0;
+    color:#FFFFFF;
+    font-weight:bold;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.submit-button:hover {
+    background: #74bbd9;
+}
+
+.validation-msg {
+    border: 2px #734466 solid;
+    border-radius:3px;
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: #734466;
+}
+
+.result {
+    margin: 1em;
+    background: #282D37;
+    border-radius:3px;
+    width: 76%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: #FFFFFF;
 }
